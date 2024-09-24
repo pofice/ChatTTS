@@ -21,9 +21,9 @@ from tools.normalizer.zh import normalizer_zh_tn
 logger = get_logger("Command")
 
 
-def save_mp3_file(wav, index):
+def save_mp3_file(wav, filename):
     data = pcm_arr_to_mp3_view(wav)
-    mp3_filename = f"output_audio_{index}.mp3"
+    mp3_filename = f"{filename}.mp3"
     with open(mp3_filename, "wb") as f:
         f.write(data)
     logger.info(f"Audio saved to {mp3_filename}")
@@ -90,19 +90,18 @@ def main(
         ),
     )
     logger.info("Inference completed.")
-    # Save each generated wav file to a local file
     if stream:
         wavs_list = []
     for index, wav in enumerate(wavs):
         if stream:
             for i, w in enumerate(wav):
-                save_mp3_file(w, (i + 1) * 1000 + index)
+                save_mp3_file(w, texts[index])
             wavs_list.append(wav)
         else:
-            save_mp3_file(wav, index)
+            save_mp3_file(wav, texts[index])
     if stream:
         for index, wav in enumerate(np.concatenate(wavs_list, axis=1)):
-            save_mp3_file(wav, index)
+            save_mp3_file(wav, texts[index])
     logger.info("Audio generation successful.")
 
 
